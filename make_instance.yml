@@ -1,0 +1,59 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template to create an EC2 instance and a CloudWatch Alarm for low CPU utilization
+
+Resources:
+  NewKeyPair:
+    Type: 'AWS::EC2::KeyPair'
+    Properties:
+      KeyName: MyKeyPair # create new keypair
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Join ["-", [webapp-security-group, dev]]
+      GroupDescription: "Allow HTTP/HTTPS and SSH inbound and outbound traffic"
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+  MyEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: g4dn.2xlarge
+      ImageId: ami-0027dfad6168539c7 # should be nvidia deep learning ami
+      KeyName: !Ref NewKeyPair
+      SecurityGroupIds:
+        - !Ref MySecurityGroup
+      # IamInstanceProfile: REPLACE_WITH_YOUR_IAM_INSTANCE_PROFILE_ARN # necessary?
+      UserData: # get ec2 metadata from internal ip, see for details: https://serverfault.com/questions/427018/what-is-this-ip-address-169-254-169-254
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum install -y aws-cli
+          instance_id=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+          aws ssm create-association --name "AWS-StopEC2Instance" --targets "Key=instanceids,Values=$instance_id" --region ${AWS::Region}
+  LowCPUUtilizationAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Alarm if CPU utilization is less than 10%
+      Namespace: AWS/EC2
+      MetricName: CPUUtilization
+      Statistic: SampleCount
+      Period: 120
+      EvaluationPeriods: 1
+      Threshold: 10
+      ComparisonOperator: LessThanThreshold
+      AlarmActions:
+        - !Sub "arn:aws:automate:${AWS::Region}:ec2:stop"
+      Dimensions:
+        - Name: InstanceId
+          Value: !Ref MyEC2Instance
+      AlarmName: LowCPUUtilizationAlarm
+
