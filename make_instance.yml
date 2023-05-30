@@ -1,9 +1,9 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Description: CloudFormation template to create an EC2 instance and a CloudWatch Alarm for low CPU utilization
 
 Resources:
   NewKeyPair:
-    Type: 'AWS::EC2::KeyPair'
+    Type: "AWS::EC2::KeyPair"
     Properties:
       KeyName: MyKeyPair # create new keypair
   MySecurityGroup:
@@ -56,4 +56,4 @@ Resources:
         - Name: InstanceId
           Value: !Ref MyEC2Instance
       AlarmName: LowCPUUtilizationAlarm
-
+  # I think we'll also want a user data script that clones one of our repos, probably just some .ipynb files and a readme
