@@ -2,9 +2,9 @@
 #
 We should be able to write a bash setup script (setup.sh) that starts with the aws sam command to deploy the cloudformation, then uses a handful of aws cli commands to get the ssh keys and the ec2 private hostname, then append those to the ssh hosts config file that vscode will automatically look at when you type "ssh" into the command pallette.
 
-The goal is for anyone with vscode and aws keys to be able to execute a one-liner that clones the repo and runs the setup script. When the script is done, they should have deployed an ec2 instance with a deep learning ami, gpu capability, a running jupyter server, an attached s3 bucket for fetching/storing jupyter notebooks, and a live ssh connection that switches their IDE context to the remote instance and displays a notebook running on the instance's jupyter server.
+The goal is for anyone with aws keys to be able to execute a one-liner that clones the repo and runs the setup script. When the script is done, they should have deployed an ec2 instance with a deep learning ami, gpu capability, a running jupyter server, an attached s3 bucket for fetching/storing jupyter notebooks. Ideally, the script would also create a live ssh connection, switch their IDE context to the remote instance and display a notebook running on the instance's jupyter server. I'd like to prototype for vscode as the IDE and extend to others later.
 
-The cloudformation should auto-stop after inactivity. We can worry about reusability (rebooting the stopped instance instead of re-deploying a new one) later :)
+The cloudformation stack should auto-stop after inactivity. We can worry about reusability (rebooting the stopped instance instead of re-deploying a new one) later :)
 
 "Creating SSH Key Pair during Cloudformation Deploy" below describes how to retrieve the new ec2's ssh key and save locally to a .pem file
 
@@ -21,7 +21,7 @@ Host my-new-ai-sandbox
 
 At that point, the user should be able to open the vscode command pallete, search for ssh, and see "my-new-ai-sandbox" show up. Once they click and the connection completes, they should be able to see the file system in the vscode sidebar and run the notebooks we've put there.
 
-I think that'd be a great start! We can worry about devcontainers later.
+I think that'd be a great start! We can worry about devcontainers and fancy reusability later.
 #
 ## Creating SSH Key Pair during Cloudformation Deploy
 To create a key pair using AWS CloudFormation
