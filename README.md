@@ -1,6 +1,10 @@
 ## How we SSH into the ec2 after running cloudformation deploy
 #
-We should be able to write a bash script that starts with the aws sam command to deploy the cloudformation, then uses a handful of aws cli commands to get the ssh keys and the ec2 private hostname, then append it to the ssh config that vscode command pallette is looking for.
+We should be able to write a bash setup script (setup.sh) that starts with the aws sam command to deploy the cloudformation, then uses a handful of aws cli commands to get the ssh keys and the ec2 private hostname, then append those to the ssh hosts config file that vscode will automatically look at when you type "ssh" into the command pallette.
+
+The goal is for anyone with vscode and aws keys to be able to execute a one-liner that clones the repo and runs the setup script. When the script is done, they should have deployed an ec2 instance with a deep learning ami, gpu capability, a running jupyter server, an attached s3 bucket for fetching/storing jupyter notebooks, and a live ssh connection that switches their IDE context to the remote instance and displays a notebook running on the instance's jupyter server.
+
+The cloudformation should auto-stop after inactivity. We can worry about reusability (rebooting the stopped instance instead of re-deploying a new one) later :)
 
 "Creating SSH Key Pair during Cloudformation Deploy" below describes how to retrieve the new ec2's ssh key and save locally to a .pem file
 
