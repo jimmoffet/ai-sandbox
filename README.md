@@ -6,6 +6,8 @@ The goal is for anyone with aws keys to be able to execute a one-liner that clon
 
 The cloudformation stack should auto-stop after inactivity. We can worry about reusability (rebooting the stopped instance instead of re-deploying a new one) later :)
 
+The rest of this readme talks mostly about building the setup.sh script and a tiny bit about the cloudformation config. You might want to peek at those now before continuing on.
+
 "Creating SSH Key Pair during Cloudformation Deploy" below describes how to retrieve the new ec2's ssh key and save locally to a .pem file
 
 We'll also need to use the aws cloudformation describe-stacks command to get the private dns hostname (ec2-blablabla.region.compute.amazonaws.com). See here for some examples, we'll need to specify the stackname in the aws sam deploy and use that, we'll also need to figure out the exact name of the key name for the ec2 instance's private dns HostName: https://stackoverflow.com/questions/41628487/getting-outputs-from-aws-cloudformation-describe-stacks
